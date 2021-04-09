@@ -4,18 +4,12 @@ html,
     margin: 0;
 }
 
-
-/*делаем фон и выравниваем всё по центру*/
-
 .body {
     background-image: linear-gradient(to top, #09203f 0%, #537895 100%);
     display: flex;
     align-items: center;
     justify-content: center;
 }
-
-
-/*обводка холста*/
 
 .canvas {
     border: 3px solid Lavender;
