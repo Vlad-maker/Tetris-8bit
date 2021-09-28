@@ -1,7 +1,8 @@
 ### [Tetris 8 Bit](https://vlad-maker.github.io/Tetris-8bit/)
 ### Любимая игра детства на JavaScript
-<img align="left" alt="JavaScript" width="26px" src="https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/javascript/javascript.png" /> 
-
+<img align="left" alt="HTML" width="30px" src="./img/html5.svg" /> 
+<img align="left" alt="CSS" width="30px" src="./img/css3.svg" /> 
+<img align="left" alt="JavaScript" width="30px" src="./img/javascript.svg" /> 
 </br>
 
 #### Планируемые обновления:

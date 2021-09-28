@@ -1,16 +1,11 @@
-        // получаем доступ к основному холсту и холсту с игровой статистикой
         const canvas = document.getElementById('game');
         const context = canvas.getContext('2d');
         const canvasScore = document.getElementById('score');
         const contextScore = canvasScore.getContext('2d');
-        // размер квадратика и массив с последовательностями фигур, на старте — пустой
         const grid = 32;
         var tetrominoSequence = [];
-        // с помощью двумерного массива следим за тем, что находится в каждой клетке игрового поля
-        // размер поля — 10 на 20, и несколько строк ещё находится за видимой областью
         var playfield = [];
 
-        // заполняем сразу массив пустыми ячейками
         for (let row = -2; row < 20; row++) {
             playfield[row] = [];
 
@@ -67,14 +62,10 @@
             'L': 'LightSalmon'
         };
 
-        // счётчик и текущая фигура в игре
         let count = 0;
         let tetromino = getNextFigure();
-        // следим за кадрами анимации, чтобы если что — остановить игру
         let rAF = null;
-        // флаг конца игры, на старте — неактивный
         let gameOver = false;
-
         let score = 0;
         let record = 0;
         let level = 1;
@@ -82,27 +73,22 @@
 
         name = prompt("Ваше имя", "");
 
-
-        // Узнаём размер хранилища Если в хранилище уже что-то есть то достаём оттуда значение рекорда и имя чемпиона
         var Storage_size = localStorage.length;
         if (Storage_size > 0) {
             record = localStorage.record;
             recordName = localStorage.recordName;
         }
 
-        // Функция возвращает случайное число в заданном диапазоне
         function getRandomInt(min, max) {
             min = Math.ceil(min);
             max = Math.floor(max);
             return Math.floor(Math.random() * (max - min + 1)) + min;
         }
 
-        // создаём последовательность фигур, которая появится в игре
         function generateSequence() {
             const sequence = ['I', 'J', 'L', 'O', 'S', 'T', 'Z'];
 
             while (sequence.length) {
-                // случайным образом находим любую из них & помещаем выбранную фигуру в игровой массив с последовательностями
                 const rand = getRandomInt(0, sequence.length - 1);
                 const name = sequence.splice(rand, 1)[0];
                 tetrominoSequence.push(name);
@@ -114,25 +100,18 @@
             if (tetrominoSequence.length === 0) {
                 generateSequence();
             }
-            // берём первую фигуру из массива & создаём матрицу, с которой мы отрисуем фигуру
             const name = tetrominoSequence.pop();
             const matrix = tetrominos[name];
-
-            // I и O стартуют с середины, остальные — чуть левее
             const col = playfield[0].length / 2 - Math.ceil(matrix[0].length / 2);
-
-            // I начинает с 21 строки (смещение -1), а все остальные — со строки 22 (смещение -2)
             const row = name === 'I' ? -1 : -2;
-
             return {
                 name: name, 
-                matrix: matrix, // матрица с фигурой
-                row: row, // текущая строка (фигуры стартуют за видимой областью холста)
-                col: col // текущий столбец
+                matrix: matrix, 
+                row: row, 
+                col: col 
             };
         }
 
-        // поворачиваем матрицу на 90 градусов
         function rotate(matrix) {
             const N = matrix.length - 1;
             const result = matrix.map((row, i) =>
@@ -141,7 +120,6 @@
             return result;
         }
 
-        // проверяем после появления или вращения, может ли матрица (фигура) быть в этом месте поля или она вылезет за его границы
         function isValidMove(matrix, cellRow, cellCol) {
             for (let row = 0; row < matrix.length; row++) {
                 for (let col = 0; col < matrix[row].length; col++) {
@@ -171,9 +149,7 @@
             }
 
             for (let row = playfield.length - 1; row >= 0;) {
-                // если ряд заполнен
                 if (playfield[row].every(cell => !!cell)) {
-
                     score += 10;
                     level = Math.floor(score / 100) + 1;
                     if (score > record) {
@@ -220,19 +196,14 @@
 
         }
 
-        // главный цикл игры (начинаем анимацию, очищаем холст)
         function loop() {
             rAF = requestAnimationFrame(loop);
             context.clearRect(0, 0, canvas.width, canvas.height);
-
-            // рисуем игровое поле с учётом заполненных фигур
             for (let row = 0; row < 20; row++) {
                 for (let col = 0; col < 10; col++) {
                     if (playfield[row][col]) {
                         const name = playfield[row][col];
                         context.fillStyle = colors[name];
-
-                        // рисуем всё на один пиксель меньше, чтобы получился эффект «в клетку»
                         context.fillRect(col * grid, row * grid, grid - 1, grid - 1);
                     }
                 }
@@ -244,15 +215,12 @@
                 if (++count > (36 - level)) {
                     tetromino.row++;
                     count = 0;
-                    // если движение закончилось — рисуем фигуру в поле и проверяем, можно ли удалить строки
                     if (!isValidMove(tetromino.matrix, tetromino.row, tetromino.col)) {
                         tetromino.row--;
                         placeTetromino();
                     }
                 }
                 context.fillStyle = colors[tetromino.name];
-
-                // отрисовываем её
                 for (let row = 0; row < tetromino.matrix.length; row++) {
                     for (let col = 0; col < tetromino.matrix[row].length; col++) {
                         if (tetromino.matrix[row][col]) {
@@ -265,7 +233,6 @@
 
         document.addEventListener('keydown', function(e) {
             if (gameOver) return;
-
             if (e.which === 37 || e.which === 39) {
                 const col = e.which === 37
                     ?
@@ -275,16 +242,12 @@
                     tetromino.col = col;
                 }
             }
-
-            // стрелка вверх — поворот
             if (e.which === 38) {
                 const matrix = rotate(tetromino.matrix);
                 if (isValidMove(matrix, tetromino.row, tetromino.col)) {
                     tetromino.matrix = matrix;
                 }
             }
-
-            // стрелка вниз — ускорить падение
             if (e.which === 40) {
                 const row = tetromino.row + 1;
                 if (!isValidMove(tetromino.matrix, row, tetromino.col)) {
